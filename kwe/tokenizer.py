@@ -102,7 +102,7 @@ class KeywordTokenizer(object):
         """
         keyword_tokens = []
         for word_tokens in tokens:
-            for n in range(1,max(size+1, len(word_tokens))):
+            for n in range(1, min(size, len(word_tokens))+1):
                 for i in range(len(word_tokens)-n+1):
                     keyword_tokens.append(word_tokens[i:i+n])
 
