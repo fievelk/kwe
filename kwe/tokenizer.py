@@ -3,10 +3,13 @@
 """Module for tokenization components and classes."""
 
 from itertools import groupby
+from string import punctuation
 
 from nltk.tokenize import sent_tokenize
 from nltk.tokenize.treebank import TreebankWordTokenizer
 from nltk.corpus import stopwords
+
+punctuation_list = list(punctuation)
 
 class KeywordTokenizer(object):
     """Tokenizer class for keyword extraction."""
@@ -42,14 +45,36 @@ class KeywordTokenizer(object):
             ['Food'], ['substance'], ['consumed'], ['substance', 'consumed'],
             ['provide'], ['nutritional'], ['support'], ['provide', 'nutritional'],
             ['nutritional', 'support'], ['provide', 'nutritional', 'support'],
-            ['body'], ['.'], ['body', '.']]
+            ['body']]
             """
 
         for text in texts:
+            # Preprocessing steps
             word_tokens = TreebankWordTokenizer().tokenize(text)
+            word_tokens = cls.remove_punctuation(word_tokens)
             chunks_without_stopwords = list(cls._split_at_stopwords(word_tokens))
 
             yield from cls.extract_ngrams(chunks_without_stopwords, size=max_size)
+
+    @staticmethod
+    def remove_punctuation(tokens):
+        """Remove puctuation tokens from an iterable of tokens.
+
+        Args:
+            tokens (iterable): An iterable of strings. E.g. a list
+                of words and symbols in a sentence:
+                ['Wolves', ':', 'an', 'endangered', 'species', '.']
+
+        Returns:
+            A list of word tokens without punctuation elements.
+
+        Examples:
+            >>> from kwe.tokenizer import KeywordTokenizer
+            >>> tokens = ['Wolves', ':', 'an', 'endangered', 'species', '.']
+            >>> KeywordTokenizer.remove_punctuation(tokens)
+            ['Wolves', 'an', 'endangered', 'species']
+        """
+        return [tok for tok in tokens if tok not in punctuation_list]
 
     @staticmethod
     def extract_ngrams(tokens, size=3):
