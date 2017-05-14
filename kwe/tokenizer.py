@@ -31,24 +31,30 @@ class KeywordTokenizer(object):
             A generator of keywords. Each keyword is a string composed of up
             to 3 word tokens.
 
-        """
+        Examples:
+            >>> from kwe.tokenizer import KeywordTokenizer
+            >>> sents = [
+            ...     'Wolves are an endangered species',
+            ...     'Food is any substance consumed to provide nutritional support for the body.'
+            ... ]
+            >>> list(KeywordTokenizer.tokenize_keywords(sents)) # doctest: +NORMALIZE_WHITESPACE
+            [['Wolves'], ['endangered'], ['species'], ['endangered', 'species'],
+            ['Food'], ['substance'], ['consumed'], ['substance', 'consumed'],
+            ['provide'], ['nutritional'], ['support'], ['provide', 'nutritional'],
+            ['nutritional', 'support'], ['provide', 'nutritional', 'support'],
+            ['body'], ['.'], ['body', '.']]
+            """
+
         for text in texts:
             word_tokens = TreebankWordTokenizer().tokenize(text)
             chunks_without_stopwords = list(cls._split_at_stopwords(word_tokens))
 
-            yield cls.extract_ngrams(chunks_without_stopwords, size=max_size)
+            yield from cls.extract_ngrams(chunks_without_stopwords, size=max_size)
 
     @staticmethod
     def extract_ngrams(tokens, size=3):
         """Extract ngrams of up to the specified size from a list of given
         tokens.
-
-        >>> from kwe.tokenizer import KeywordTokenizer
-        >>> tokens = [['Food'], ['substance', 'consumed', 'daily', 'hospital']]
-        >>> KeywordTokenizer.extract_ngrams(tokens) # doctest: +NORMALIZE_WHITESPACE
-        [['Food'], ['substance'], ['consumed'], ['daily'], ['hospital'],
-        ['substance', 'consumed'], ['consumed', 'daily'], ['daily', 'hospital'],
-        ['substance', 'consumed', 'daily'], ['consumed', 'daily', 'hospital']]
 
         Args:
             tokens (iterable): An iterable containing lists of words. E.g.:
@@ -59,6 +65,14 @@ class KeywordTokenizer(object):
             A list of lists. Each sublist represents the ngrams of up to `size`
             words extracted from a single token. E.g.:
             [['Food'], ['substance'], ['consumed'], ['substance', 'consumed'], ...]
+
+        Examples:
+            >>> from kwe.tokenizer import KeywordTokenizer
+            >>> tokens = [['Food'], ['substance', 'consumed', 'daily', 'hospital']]
+            >>> KeywordTokenizer.extract_ngrams(tokens) # doctest: +NORMALIZE_WHITESPACE
+            [['Food'], ['substance'], ['consumed'], ['daily'], ['hospital'],
+            ['substance', 'consumed'], ['consumed', 'daily'], ['daily', 'hospital'],
+            ['substance', 'consumed', 'daily'], ['consumed', 'daily', 'hospital']]
 
         """
         keyword_tokens = []
