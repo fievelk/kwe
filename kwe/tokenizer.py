@@ -18,12 +18,14 @@ class KeywordTokenizer(object):
                 yield from sent_tokenize(line)
 
     @classmethod
-    def tokenize_keywords(cls, texts, size=3):
+    def tokenize_keywords(cls, texts, max_size=3):
         """Extract candidate keywords from one or more text sources.
 
         Args:
             texts (iterable): An iterable of strings. For example, a list of
                 sentences: ['first sentence', 'second sentence', ...]
+            max_size (int): The maximum number of words that each keyword will
+                be made of.
 
         Yields:
             A generator of keywords. Each keyword is a string composed of up
@@ -32,16 +34,26 @@ class KeywordTokenizer(object):
         """
         for text in texts:
             word_tokens = TreebankWordTokenizer().tokenize(text)
-            tokens_without_stopwords = list(cls._split_at_stopwords(word_tokens))
+            chunks_without_stopwords = list(cls._split_at_stopwords(word_tokens))
 
-            yield from cls._extract_ngrams(tokens_without_stopwords, size=size)
+            yield cls.extract_ngrams(chunks_without_stopwords, size=max_size)
 
-    def _extract_ngrams(tokens, size):
-        """Extract ngrams of specified size from a list of given tokens.
+    @staticmethod
+    def extract_ngrams(tokens, size=3):
+        """Extract ngrams of up to the specified size from a list of given
+        tokens.
+
+        >>> from kwe.tokenizer import KeywordTokenizer
+        >>> tokens = [['Food'], ['substance', 'consumed', 'daily', 'hospital']]
+        >>> KeywordTokenizer.extract_ngrams(tokens) # doctest: +NORMALIZE_WHITESPACE
+        [['Food'], ['substance'], ['consumed'], ['daily'], ['hospital'],
+        ['substance', 'consumed'], ['consumed', 'daily'], ['daily', 'hospital'],
+        ['substance', 'consumed', 'daily'], ['consumed', 'daily', 'hospital']]
 
         Args:
             tokens (iterable): An iterable containing lists of words. E.g.:
                 [['Food'], ['substance', 'consumed'], ...]
+            size (int): The ngram size. E.g.: 2 for bigrams, 3 for trigrams, etc.
 
         Yields:
             A list of lists. Each sublist represents the ngrams of up to `size`
@@ -55,7 +67,7 @@ class KeywordTokenizer(object):
                 for i in range(len(word_tokens)-n+1):
                     keyword_tokens.append(word_tokens[i:i+n])
 
-        yield keyword_tokens
+        return keyword_tokens
 
     def _split_at_stopwords(word_tokens):
         """Split an iterable of words into chunks, using English stopwords as
