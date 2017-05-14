@@ -1,1 +1,1 @@
-from kwe import runner
+from kwe.keyword_extractor import KeywordExtractor

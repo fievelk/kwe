@@ -22,8 +22,9 @@ pip install .
 ## Usage
 
 ```python
-import kwe
-kwe.runner.extract_keywords('file_path.txt')
+from kwe import KeywordExtractor
+extractor = KeywordExtractor('file_path.txt', max_keyword_size=3)
+keywords = extractor.extract_keywords()
 ```
 
 ## Testing
