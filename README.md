@@ -6,6 +6,11 @@ KWE is a KeyWord Extraction tool written in Python
 
 - `python 3`
 
+Optional dependencies for testing:
+
+- `tox`
+- `pytest`
+
 ## Installation
 
 ```bash
@@ -22,3 +27,5 @@ kwe.runner.extract_keywords('file_path.txt')
 ```
 
 ## Testing
+
+To run tests in several Python environments simply issue the `tox` command from terminal. Please check `tox.ini` for more details.
