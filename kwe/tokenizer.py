@@ -98,8 +98,13 @@ class KeywordTokenizer(object):
             [['Food'], ['substance'], ['consumed'], ['daily'], ['hospital'],
             ['substance', 'consumed'], ['consumed', 'daily'], ['daily', 'hospital'],
             ['substance', 'consumed', 'daily'], ['consumed', 'daily', 'hospital']]
-
+            >>> tokens = [['a', 'b', 'c', 'd', 'e']]
+            >>> KeywordTokenizer.extract_ngrams(tokens, 2) # doctest: +NORMALIZE_WHITESPACE
+            [['a'], ['b'], ['c'], ['d'], ['e'], ['a', 'b'], ['b', 'c'], ['c', 'd'],
+            ['d', 'e']]
         """
+        assert all(isinstance(tok, list) for tok in tokens), 'tokens should be a list of lists'
+
         keyword_tokens = []
         for word_tokens in tokens:
             for n in range(1, min(size, len(word_tokens))+1):
