@@ -21,7 +21,7 @@ class KeywordTokenizer(object):
                 yield from sent_tokenize(line)
 
     @classmethod
-    def tokenize_keywords(cls, texts, max_size=3):
+    def tokenize_keywords(cls, texts, max_size=3, flexible_window=False):
         """Extract candidate keywords from one or more text sources.
 
         Args:
@@ -29,6 +29,9 @@ class KeywordTokenizer(object):
                 sentences: ['first sentence', 'second sentence', ...]
             max_size (int): The maximum number of words that each keyword will
                 be made of.
+            flexible_window (bool): if True, gather all ngrams whose length goes
+                from 1 up to the maximum size provided. If False, only return
+                the longer ngram available and discard shorter ones.
 
         Yields:
             A generator of keywords. Each keyword is a string composed of up
@@ -40,21 +43,28 @@ class KeywordTokenizer(object):
             ...     'Wolves are an endangered species',
             ...     'Food is any substance consumed to provide nutritional support for the body.'
             ... ]
-            >>> list(KeywordTokenizer.tokenize_keywords(sents)) # doctest: +NORMALIZE_WHITESPACE
+            >>> list(KeywordTokenizer.tokenize_keywords(sents, 3, True)) # doctest: +NORMALIZE_WHITESPACE
             [['Wolves'], ['endangered'], ['species'], ['endangered', 'species'],
             ['Food'], ['substance'], ['consumed'], ['substance', 'consumed'],
             ['provide'], ['nutritional'], ['support'], ['provide', 'nutritional'],
             ['nutritional', 'support'], ['provide', 'nutritional', 'support'],
             ['body']]
-            """
+            >>> list(KeywordTokenizer.tokenize_keywords(sents, 3, False)) # doctest: +NORMALIZE_WHITESPACE
+            [['Wolves'], ['endangered', 'species'], ['Food'], ['substance',
+            'consumed'], ['provide', 'nutritional', 'support'], ['body']]
 
+        """
         for text in texts:
             # Preprocessing steps
             word_tokens = TreebankWordTokenizer().tokenize(text)
             word_tokens = cls.remove_punctuation(word_tokens)
             chunks_without_stopwords = list(cls._split_at_stopwords(word_tokens))
 
-            yield from cls.extract_ngrams(chunks_without_stopwords, size=max_size)
+            yield from cls.extract_ngrams(
+                tokens=chunks_without_stopwords,
+                size=max_size,
+                flexible_window=flexible_window
+            )
 
     @staticmethod
     def remove_punctuation(tokens):
@@ -73,11 +83,12 @@ class KeywordTokenizer(object):
             >>> tokens = ['Wolves', ':', 'an', 'endangered', 'species', '.']
             >>> KeywordTokenizer.remove_punctuation(tokens)
             ['Wolves', 'an', 'endangered', 'species']
+
         """
         return [tok for tok in tokens if tok not in punctuation_list]
 
     @staticmethod
-    def extract_ngrams(tokens, size=3):
+    def extract_ngrams(tokens, size=3, flexible_window=False):
         """Extract ngrams of up to the specified size from a list of given
         tokens.
 
@@ -85,6 +96,9 @@ class KeywordTokenizer(object):
             tokens (iterable): An iterable containing lists of words. E.g.:
                 [['Food'], ['substance', 'consumed'], ...]
             size (int): The ngram size. E.g.: 2 for bigrams, 3 for trigrams, etc.
+            flexible_window (bool): if True, gather all ngrams whose length goes
+                from 1 up to the maximum size provided. If False, only return
+                the longer ngram available and discard shorter ones.
 
         Yields:
             A list of lists. Each sublist represents the ngrams of up to `size`
@@ -94,22 +108,32 @@ class KeywordTokenizer(object):
         Examples:
             >>> from kwe.tokenizer import KeywordTokenizer
             >>> tokens = [['Food'], ['substance', 'consumed', 'daily', 'hospital']]
-            >>> KeywordTokenizer.extract_ngrams(tokens) # doctest: +NORMALIZE_WHITESPACE
+            >>> KeywordTokenizer.extract_ngrams(tokens, flexible_window=True) # doctest: +NORMALIZE_WHITESPACE
             [['Food'], ['substance'], ['consumed'], ['daily'], ['hospital'],
             ['substance', 'consumed'], ['consumed', 'daily'], ['daily', 'hospital'],
             ['substance', 'consumed', 'daily'], ['consumed', 'daily', 'hospital']]
+            >>> KeywordTokenizer.extract_ngrams(tokens, flexible_window=False) # doctest: +NORMALIZE_WHITESPACE
+            [['Food'], ['substance', 'consumed', 'daily'], ['consumed', 'daily', 'hospital']]
             >>> tokens = [['a', 'b', 'c', 'd', 'e']]
-            >>> KeywordTokenizer.extract_ngrams(tokens, 2) # doctest: +NORMALIZE_WHITESPACE
+            >>> KeywordTokenizer.extract_ngrams(tokens, 2, flexible_window=True) # doctest: +NORMALIZE_WHITESPACE
             [['a'], ['b'], ['c'], ['d'], ['e'], ['a', 'b'], ['b', 'c'], ['c', 'd'],
             ['d', 'e']]
+
         """
         assert all(isinstance(tok, list) for tok in tokens), 'tokens should be a list of lists'
 
         keyword_tokens = []
-        for word_tokens in tokens:
-            for n in range(1, min(size, len(word_tokens))+1):
-                for i in range(len(word_tokens)-n+1):
-                    keyword_tokens.append(word_tokens[i:i+n])
+
+        if flexible_window:
+            for word_tokens in tokens:
+                for n in range(1, min(size, len(word_tokens))+1):
+                    for i in range(len(word_tokens)-n+1):
+                        keyword_tokens.append(word_tokens[i:i+n])
+        else:
+            for word_tokens in tokens:
+                max_size = min(size, len(word_tokens))
+                for i in range(len(word_tokens)-max_size+1):
+                    keyword_tokens.append(word_tokens[i:i+max_size])
 
         return keyword_tokens
 
