@@ -8,7 +8,7 @@ from collections import defaultdict
 
 import pandas as pd
 
-from kwe.tokenizer import KeywordTokenizer
+from kwe.tokenizers import KeywordTokenizer
 
 class KeywordExtractor(object):
     """Keyword extraction class."""
@@ -30,8 +30,8 @@ class KeywordExtractor(object):
         self._compute_all_keyword_scores(candidate_keywords)
 
     def _extract_keyword_candidates(self):
-        sentences = KeywordTokenizer.tokenize_sentences(self.input_file)
-        candidate_keywords = list(KeywordTokenizer.tokenize_keywords(
+        sentences = self.tokenizer.tokenize_sentences(self.input_file)
+        candidate_keywords = list(self.tokenizer.tokenize_keywords(
             sentences, self.max_keyword_size
         ))
 
