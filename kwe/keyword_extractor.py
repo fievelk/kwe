@@ -8,7 +8,7 @@ from collections import defaultdict
 
 import pandas as pd
 
-from kwe.tokenizers import KeywordTokenizer
+from kwe.tokenizers import RegexpKeywordTokenizer
 
 class KeywordExtractor(object):
     """Keyword extraction class."""
@@ -20,7 +20,7 @@ class KeywordExtractor(object):
         self.all_words = None
 
         if tokenizer is None:
-            self.tokenizer = KeywordTokenizer
+            self.tokenizer = RegexpKeywordTokenizer
         else:
             self.tokenizer = tokenizer
 
