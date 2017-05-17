@@ -9,13 +9,15 @@ from nltk.tokenize import sent_tokenize
 from nltk.tokenize.treebank import TreebankWordTokenizer
 from nltk.corpus import stopwords
 
+from .tokenizer import Tokenizer
+
 punctuation_list = set(punctuation)
 additional_punctuation = {'–', '°'}
 punctuation_list.update(additional_punctuation)
 
 stopwords_set = set(stopwords.words('english'))
 
-class KeywordTokenizer(object):
+class KeywordTokenizer(Tokenizer):
     """Tokenizer class for keyword extraction."""
 
     @staticmethod
@@ -42,7 +44,7 @@ class KeywordTokenizer(object):
             to 3 word tokens.
 
         Examples:
-            >>> from kwe.tokenizer import KeywordTokenizer
+            >>> from kwe.tokenizers import KeywordTokenizer
             >>> sents = [
             ...     'Wolves are an endangered species',
             ...     'Food is any substance consumed to provide nutritional support for the body.'
@@ -84,7 +86,7 @@ class KeywordTokenizer(object):
             A list of word tokens without punctuation elements.
 
         Examples:
-            >>> from kwe.tokenizer import KeywordTokenizer
+            >>> from kwe.tokenizers import KeywordTokenizer
             >>> tokens = ['Wolves', ':', 'an', 'endangered', 'species', '.']
             >>> KeywordTokenizer.remove_punctuation(tokens)
             ['Wolves', 'an', 'endangered', 'species']
@@ -111,7 +113,7 @@ class KeywordTokenizer(object):
             [['Food'], ['substance'], ['consumed'], ['substance', 'consumed'], ...]
 
         Examples:
-            >>> from kwe.tokenizer import KeywordTokenizer
+            >>> from kwe.tokenizers import KeywordTokenizer
             >>> tokens = [['Food'], ['substance', 'consumed', 'daily', 'hospital']]
             >>> KeywordTokenizer.extract_ngrams(tokens, flexible_window=True) # doctest: +NORMALIZE_WHITESPACE
             [['Food'], ['substance'], ['consumed'], ['daily'], ['hospital'],
