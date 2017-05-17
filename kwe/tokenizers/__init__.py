@@ -1,1 +1,2 @@
 from kwe.tokenizers.keyword_tokenizer import KeywordTokenizer
+from kwe.tokenizers.regexp_keyword_tokenizer import RegexpKeywordTokenizer
