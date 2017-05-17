@@ -9,7 +9,11 @@ from nltk.tokenize import sent_tokenize
 from nltk.tokenize.treebank import TreebankWordTokenizer
 from nltk.corpus import stopwords
 
-punctuation_list = list(punctuation)
+punctuation_list = set(punctuation)
+additional_punctuation = {'–', '°'}
+punctuation_list.update(additional_punctuation)
+
+stopwords_set = set(stopwords.words('english'))
 
 class KeywordTokenizer(object):
     """Tokenizer class for keyword extraction."""
@@ -57,6 +61,7 @@ class KeywordTokenizer(object):
         for text in texts:
             # Preprocessing steps
             word_tokens = TreebankWordTokenizer().tokenize(text)
+
             word_tokens = cls.remove_punctuation(word_tokens)
             chunks_without_stopwords = list(cls._split_at_stopwords(word_tokens))
 
@@ -150,7 +155,6 @@ class KeywordTokenizer(object):
             A list of lists. Each sublist is made of words. E.g.:
 
         """
-        stopwords_set = set(stopwords.words('english'))
         for k, g in groupby(word_tokens, key=lambda w: w.lower() in stopwords_set):
             if not k:
                 yield list(g)
