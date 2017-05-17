@@ -5,6 +5,8 @@ KWE is a KeyWord Extraction tool written in Python
 ## Requirements
 
 - `python 3`
+- `nltk`
+- `pandas`
 
 Optional dependencies for testing:
 
