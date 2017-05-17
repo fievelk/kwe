@@ -60,9 +60,11 @@ class KeywordTokenizer(Tokenizer):
             'consumed'], ['provide', 'nutritional', 'support'], ['body']]
 
         """
+        tokenizer = TreebankWordTokenizer()
+
         for text in texts:
             # Preprocessing steps
-            word_tokens = TreebankWordTokenizer().tokenize(text)
+            word_tokens = tokenizer.tokenize(text)
 
             word_tokens = cls.remove_punctuation(word_tokens)
             chunks_without_stopwords = list(cls._split_at_stopwords(word_tokens))
