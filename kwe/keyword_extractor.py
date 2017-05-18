@@ -30,6 +30,8 @@ class KeywordExtractor(object):
         keyword_scores = self._compute_all_keyword_scores(candidate_keywords)
         pruned_keyword_scores = self._prune_keyword_candidates(keyword_scores)
 
+        return [keyword for keyword, score in keyword_scores.items()]
+
     def _extract_keyword_candidates(self):
         sentences = self.tokenizer.tokenize_sentences(self.input_file)
         candidate_keywords = list(self.tokenizer.tokenize_keywords(
