@@ -57,14 +57,14 @@ class KeywordExtractor(object):
 
         """
 
-        candidate_keywords = self._extract_keyword_candidates()
+        candidate_keywords = self._extract_candidate_keywords()
         self._build_co_occurrency_matrix(candidate_keywords)
         keyword_scores = self._compute_all_keyword_scores(candidate_keywords)
-        pruned_keyword_scores = self._prune_keyword_candidates(keyword_scores)
+        pruned_keyword_scores = self._prune_candidate_keywords(keyword_scores)
 
         return [keyword for keyword, score in keyword_scores.items()]
 
-    def _extract_keyword_candidates(self):
+    def _extract_candidate_keywords(self):
         sentences = self.tokenizer.tokenize_sentences(self.input_file)
         candidate_keywords = list(self.tokenizer.tokenize_keywords(
             sentences, self.max_keyword_size
@@ -113,7 +113,7 @@ class KeywordExtractor(object):
 
         return word_scores
 
-    def _prune_keyword_candidates(self, keyword_scores):
+    def _prune_candidate_keywords(self, keyword_scores):
         """Return best `n` keyword candidates. `n` is computed as one-third the
         number of words in the co-occurrency graph.
         See Mihalcea and Tarau (2004).
