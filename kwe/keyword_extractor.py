@@ -28,7 +28,7 @@ class KeywordExtractor(object):
         candidate_keywords = self._extract_keyword_candidates()
         self._build_co_occurrency_matrix(candidate_keywords)
         keyword_scores = self._compute_all_keyword_scores(candidate_keywords)
-        self._prune_keyword_candidates(keyword_scores)
+        pruned_keyword_scores = self._prune_keyword_candidates(keyword_scores)
 
     def _extract_keyword_candidates(self):
         sentences = self.tokenizer.tokenize_sentences(self.input_file)
@@ -62,7 +62,10 @@ class KeywordExtractor(object):
             score = 0
             for word in keyword:
                 score += word_scores[word.lower()]
-            keyword_scores[' '.join(keyword)] = score
+
+            # Lists are unhashable; we therefore use tuples so that we can
+            # have keywords as dictionary keys
+            keyword_scores[tuple(keyword)] = score
 
         return keyword_scores
 
