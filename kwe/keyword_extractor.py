@@ -11,9 +11,34 @@ import pandas as pd
 from kwe.tokenizers import RegexpKeywordTokenizer
 
 class KeywordExtractor(object):
-    """Keyword extraction class."""
+    """Keyword extraction class.
+
+    Attributes:
+        input_file (str): The path leading to the text file from which
+            keywords should be extracted.
+        max_keyword_size (int): The maximum number of word tokens that can
+            compose a single keyword.
+        co_occurrency_matrix (pandas.DataFrame): A matrix of co-occurrencies
+            between words. A co-occurrency occurs when two words belong to the
+            same keyword candidate.
+        all_words (set): The set of all word tokens in the target text.
+        tokenizer (class): The tokenizer class used to extract sentences and
+            word tokens from the target text.
+
+    """
 
     def __init__(self, input_file, max_keyword_size=3, tokenizer=None):
+        """Constructor for the KeywordExtractor class.
+
+        Args:
+            input_file (str): The path leading to the text file from which
+                keywords should be extracted.
+            max_keyword_size (int): [optional] The maximum number of word tokens
+                for each keyword. Default: 3.
+            tokenizer (class): [optional] A tokenizer class implementing the
+                Tokenizer interface. Default: RegexpKeywordTokenizer.
+
+        """
         self.input_file = input_file
         self.max_keyword_size = max_keyword_size
         self.co_occurrency_matrix = None
@@ -25,6 +50,13 @@ class KeywordExtractor(object):
             self.tokenizer = tokenizer
 
     def extract_keywords(self):
+        """Extract keywords from the provided input file.
+
+        Returns:
+            A list of keywords.
+
+        """
+
         candidate_keywords = self._extract_keyword_candidates()
         self._build_co_occurrency_matrix(candidate_keywords)
         keyword_scores = self._compute_all_keyword_scores(candidate_keywords)
