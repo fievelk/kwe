@@ -36,7 +36,7 @@ corpus_file_paths = [
 ]
 
 # Retrieve top n (`limit`) keyword candidates.
-all_keywords = KeywordExtractor.extract_corpus_keywords(
+all_keywords = KeywordExtractor.extract_document_keywords(
     target_file_path, corpus_file_paths, max_keyword_size=3, limit=10)
 ```
 

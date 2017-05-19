@@ -224,7 +224,7 @@ class KeywordExtractor(object):
             reverse=True)[:n]
 
     @classmethod
-    def extract_corpus_keywords(cls, target_file_path, corpus_file_paths,
+    def extract_document_keywords(cls, target_file_path, corpus_file_paths,
         max_keyword_size=3, tokenizer=None, limit=10):
 
         extractor = cls(target_file_path, max_keyword_size)
