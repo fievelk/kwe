@@ -20,6 +20,7 @@ Sources:
 import itertools
 from collections import defaultdict
 
+import gensim
 import pandas as pd
 
 from kwe.tokenizers import RegexpKeywordTokenizer
@@ -221,3 +222,41 @@ class KeywordExtractor(object):
             keyword_scores.items(),
             key=lambda x: x[1],
             reverse=True)[:n]
+
+    @classmethod
+    def extract_corpus_keywords(cls, target_file_path, corpus_file_paths,
+        max_keyword_size=3, tokenizer=None, limit=10):
+
+        extractor = cls(target_file_path, max_keyword_size)
+        target_candidate_keywords = extractor.extract_keywords()
+
+        all_candidate_keywords = [target_candidate_keywords]
+        for file_path in corpus_file_paths:
+            extractor = cls(file_path, max_keyword_size)
+            all_candidate_keywords.append(extractor.extract_keywords())
+
+        dictionary = gensim.corpora.Dictionary(all_candidate_keywords)
+        corpus_tfidf = cls.generate_tf_idf_model(dictionary, all_candidate_keywords)
+        best_keywords = cls.retrieve_best_keywords(dictionary, corpus_tfidf, limit)
+
+        return best_keywords
+
+    @classmethod
+    def generate_tf_idf_model(cls, dictionary, corpus_candidate_keywords):
+        corpus = [dictionary.doc2bow(corp_kws) for corp_kws in corpus_candidate_keywords]
+        tfidf = gensim.models.TfidfModel(corpus)
+        corpus_tfidf = tfidf[corpus]
+
+        return corpus_tfidf
+
+    @classmethod
+    def retrieve_best_keywords(cls, dictionary, corpus_tfidf, limit):
+        target_tf_idf = corpus_tfidf[0]
+        sorted_tf_idf = sorted(target_tf_idf, key=lambda x: x[1], reverse=True)
+
+        best_keywords = []
+        for word_id, score in sorted_tf_idf:
+            keyword = dictionary[word_id]
+            best_keywords.append((keyword, score))
+
+        return best_keywords[:limit]
