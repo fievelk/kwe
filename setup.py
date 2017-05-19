@@ -11,5 +11,7 @@ setup(name='kwe',
       package_data={'kwe': ['data/*.txt']},
       install_requires=[
           'nltk',
+          'pandas',
+          'gensim'
       ],
       zip_safe=False)
