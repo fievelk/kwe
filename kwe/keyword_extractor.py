@@ -144,8 +144,8 @@ class KeywordExtractor(object):
                 Each keyword is a list of strings (word tokens).
 
         Returns:
-            defaultdict (tuple: float): A dictionary with keywords as keys and
-            word scores as values. Each keyword is a tuple of strings (word tokens).
+            defaultdict (str: float): A dictionary with keywords as keys and
+            word scores as values. Each keyword is a string.
 
         """
         # Create a pandas Series containing word degree scores.
@@ -159,9 +159,10 @@ class KeywordExtractor(object):
             for word in keyword:
                 score += word_scores[word.lower()]
 
-            # Lists are unhashable; we therefore use tuples so that we can
+            # Lists are unhashable and tuples cannot be directly handled by
+            # gemsim; we therefore concatenate keyword tokens so that we can
             # have keywords as dictionary keys
-            keyword_scores[tuple(keyword)] = score
+            keyword_scores[' '.join(keyword)] = score
 
         return keyword_scores
 
