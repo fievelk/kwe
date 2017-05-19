@@ -25,8 +25,18 @@ pip install .
 
 ```python
 from kwe import KeywordExtractor
-extractor = KeywordExtractor('file_path.txt', max_keyword_size=3)
-keywords = extractor.extract_keywords()
+
+# Gather all file paths for our target document and corpus documents
+target_file_path = 'kwe/data/script.txt'
+corpus_file_paths = [
+    'kwe/data/transcript_1.txt',
+    'kwe/data/transcript_2.txt',
+    'kwe/data/transcript_3.txt'
+]
+
+# Retrieve top n (`limit`) keyword candidates.
+all_keywords = KeywordExtractor.extract_corpus_keywords(
+    target_file_path, corpus_file_paths, max_keyword_size=3, limit=10)
 ```
 
 ## Testing
