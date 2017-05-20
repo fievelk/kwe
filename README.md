@@ -1,6 +1,14 @@
 # KWE
 
-KWE is a KeyWord Extraction tool written in Python
+KWE is a KeyWord Extraction tool written in Python.
+
+# Table of Contents
+
+* [Requirements](#requirements)
+* [Installation](#installation)
+* [Usage](#usage)
+* [Testing](#testing)
+* [Notes and approach](NOTES.md)
 
 ## Requirements
 
@@ -43,3 +51,7 @@ all_keywords = KeywordExtractor.extract_document_keywords(
 ## Testing
 
 To run tests in several Python environments simply issue the `tox` command from terminal. Please check `tox.ini` for more details.
+
+## Notes
+
+Please refer to [`NOTES.md`](NOTES.md) for more information, thoughts, hypotheses and an ambitious to-do list.
