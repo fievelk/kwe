@@ -58,6 +58,8 @@ The package documentation has been written using a Google Style syntax for Pytho
 
 Here is a list of notes, specific improvements and ideas about further development.
 
+- KWE is currently only removing punctuation. However, candidate keywords are not being split into chunks when a punctuation symbol is met. This produces mistakes: the sentence "Diophantine equations, strict [...]" would for example also produce a keyword for "Diophantine equations strict". The tokenizer should instead split keywords into chunks using punctuation symbols as delimiters (as it does with stopwords).
+
 - Use other approaches for the last step: replace TF-IDF with some other method (e.g. unsupervised learning).
 
 - Other approaches could involve parsing text for POS tags and defining specific rules to identify meaningful phrases.
