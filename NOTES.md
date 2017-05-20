@@ -4,13 +4,22 @@ Current results do not seem to be very meaningful. Improvements could be then ma
 
 #### Table of Contents:
 
-* [Current approach](#current-approach)
+* [Implementation](#implementation)
+  - [Keyword Extraction approach](#keyword-extraction-approach)
+  - [Tests](#tests)
+  - [Documentation](#documentation)
 * [Improvements and ideas](#improvements-and-ideas)
 * [Data](#data)
 
-## Current approach
+## Implementation
 
-I decided to test an approach based on statistical intra-document and inter-document scores for keywords. These are the main steps:
+In the following sections I will describe my approach and explain the main motives that led to take specific decisions while implementing the code.
+
+### Keyword Extraction approach
+
+Keyword extraction tasks can be tackled using several techniques. I decided to test an hybrid approach based on statistical intra-document and inter-document scores for keywords. This could provide a useful baseline for further improvements using more complex methodologies.
+
+These are the main steps:
 
 1. Extract candidate keywords on each single document:
    - tokenize input text at sentence level;
@@ -32,6 +41,17 @@ I decided to test an approach based on statistical intra-document and inter-docu
 3. Compare the input document candidate keywords with all the other documents using TF-IDF scores.
 
    The final list is then sorted and the top `N` keywods are returned along with their score.
+
+### Tests
+
+I implemented the test framework using `pytest` and `tox`. This is actually more than what is needed at the current stage, but it can be very useful for future developments.
+
+I decided to use doctests instead of unit tests mostly because of time boundaries; however, doctests also represent an excellent source of documentation, providing examples and practical use cases.
+
+
+### Documentation
+
+The package documentation has been written using a Google Style syntax for Python docstrings. See [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html) for details.
 
 
 ## Improvements and ideas
